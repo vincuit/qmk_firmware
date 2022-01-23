@@ -17,7 +17,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------| PLAY  |    |  DEL  |------+------+------+------+------+------|
  * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |RShift|
  * `-----------------------------------------/       /     \      \-----------------------------------------'
- *                   | LAlt | LOWER| CAPS | /Space  /       \Enter \  |BackSP| RGUI | RAISE|
+ *                   | LAlt | NUMPD| CAPS | / Space /       \Enter \  |BackSP| RGUI |QWERTY|
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
@@ -27,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
   KC_LCTRL, KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, KC_MPLY,   KC_DEL,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-                        KC_LALT, TT(_NUMPAD), KC_CAPS, KC_SPC, KC_ENT, KC_BSPC, KC_RGUI, KC_1
+                        KC_LALT, TT(_NUMPAD), KC_CAPS, KC_SPC,  KC_ENT,  KC_BSPC, KC_RGUI, TO(_QWERTY)
 ),
 /* NUMPAD
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -37,18 +37,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |  F7  |  F8  |  F9  | F10  | F11  | F12  |-------.    ,-------|      |   4  |   5  |   6  |      | P_DN |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------|    |-------|   0  |   1  |   2  |   3  |      | END  |
+ * |      |      |      |      |      |      |-------|    |-------|   0  |   1  |   2  |   3  |   .  | END  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
- *                   | LAlt | LOWER| CAPS | / Space /       \Enter \  |BackSP| RGUI | RAISE|
+ *                   | LAlt | NUMPD| CAPS | / Space /       \Enter \  |BackSP| RGUI |QWERTY|
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
 
 [_NUMPAD] = LAYOUT(
-  _______, _______, _______, _______, _______, _______,                     _______, KC_SLSH, KC_ASTR, KC_MINS, KC_PSCR, KC_HOME,
-  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                       _______, KC_7,    KC_8,    KC_9,    KC_PLUS, KC_PGUP,
-  KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,                      _______, KC_4,    KC_5,    KC_6,    _______, KC_PGDN,
-  _______, _______, _______, _______, _______, _______,  _______, _______,  KC_0,    KC_1,    KC_2,    KC_3,    _______, KC_END,
+  _______, _______, _______, _______, _______, _______,                     _______, KC_PSLS, KC_PAST, KC_PMNS, KC_PSCR, KC_HOME,
+  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                       _______, KC_P7,   KC_P8,   KC_P9,   KC_PPLS, KC_PGUP,
+  KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,                      _______, KC_P4,   KC_P5,   KC_P6,   _______, KC_PGDN,
+  _______, _______, _______, _______, _______, _______,  _______, _______,  KC_P0,   KC_P1,   KC_P2,   KC_P3,   KC_PDOT, KC_END,
                              _______, KC_TRNS, _______,  _______, _______,  _______, _______, KC_TRNS
 )
 };
@@ -62,8 +62,6 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   return (rotation);
 }
 
-
-
 static void render_qmk_logo(void) {
     static const char PROGMEM qmk_logo[] = {
         0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94,
@@ -73,7 +71,6 @@ static void render_qmk_logo(void) {
 
     oled_write_P(qmk_logo, false);
 }
-
 
 static void render_status(void) {
     // Host Keyboard Layer Status
