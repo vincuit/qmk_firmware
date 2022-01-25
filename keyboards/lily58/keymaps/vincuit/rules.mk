@@ -13,7 +13,7 @@ OLED_DRIVER = SSD1306
 VIA_ENABLE = yes
 ENCODER_ENABLE = yes
 LTO_ENABLE = yes
-
+TAP_DANCE_ENABLE = yes
 
 
 # If you want to change the display of OLED, you need to change here
