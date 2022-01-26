@@ -2,7 +2,8 @@
 
 enum layer_number {
   _QWERTY = 0,
-  _NUMPAD = 1,
+  _NUMPAD = 1
+  _CAD = 2
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -50,6 +51,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, _______, KC_UP,   _______, _______,                     _______, KC_P4,   KC_P5,   KC_P6,   KC_PEQL, KC_PGDN,
   _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, _______,  _______, _______,  KC_P0,   KC_P1,   KC_P2,   KC_P3,   KC_PDOT, KC_END,
                          _______, _______, TO(_QWERTY),  _______, _______,  _______, _______, KC_TRNS
+),
+/* CAD
+ * ,-----------------------------------------.                    ,-----------------------------------------.
+ * | ESC  |   1  |   2  |   3  |   4  |   5  |                    |      |   /  |   *  |   -  |PRINTS| HOME |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |      |   6  |   7  |   8  |   9  |   0  |                    |      |   7  |   8  |   9  |   +  | P_UP |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |      |      |      |  UP  |   -  |   M  |-------.    ,-------|      |   4  |   5  |   6  |   =  | P_DN |
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
+ * |      |      | LEFT | DOWN | RGHT |   C  |-------|    |-------|   0  |   1  |   2  |   3  |   .  | END  |
+ * `-----------------------------------------/       /     \      \-----------------------------------------'
+ *                   | LAlt | CAPS |QWERTY| / Space /       \Enter \  |BackSP| RGUI |QWERTY|
+ *                   |      |      |      |/       /         \      \ |      |      |      |
+ *                   `----------------------------'           '------''--------------------'
+ */
+
+[_CAD] = LAYOUT(
+  KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                        _______, KC_PSLS, KC_PAST, KC_PMNS, KC_PSCR, KC_HOME,
+  _______, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,                        _______, KC_P7,   KC_P8,   KC_P9,   KC_PPLS, KC_PGUP,
+  _______, _______, _______, KC_UP,   KC_PMNS, KC_M,                        _______, KC_P4,   KC_P5,   KC_P6,   KC_PEQL, KC_PGDN,
+  _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_C,     _______, _______,  KC_P0,   KC_P1,   KC_P2,   KC_P3,   KC_PDOT, KC_END,
+                         _______, _______, TO(_QWERTY),  KC_ENT,  _______,  _______, _______, KC_TRNS
 )
 };
 
@@ -81,6 +104,9 @@ static void render_status(void) {
             break;
         case _NUMPAD:
             oled_write_P(PSTR("Numpad\n"), false);
+            break;
+        case _CAD:
+            oled_write_P(PSTR("CAD\n"), false);
             break;
         default:
             oled_write_P(PSTR("Undefined\n"), false);
