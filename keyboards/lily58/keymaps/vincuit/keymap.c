@@ -1,5 +1,41 @@
 #include QMK_KEYBOARD_H
 
+// FIRST PART TAP DACE
+// Define a type for as many tap dance states as you need
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+//  TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+// Tap Dance declarations
+enum {
+    TD_SPC_ENT = 0,
+    TD_NUM_CAD
+};
+
+// Tap Dance definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    // Tap once for Space, twice for Enter
+    [TD_SPC_ENT] = ACTION_TAP_DANCE_DOUBLE(KC_SPC, KC_ENT),
+};
+
+// Function associated with all tap dances
+td_state_t cur_dance(qk_tap_dance_state_t *state);
+
+// Functions associated with individual tap dances
+void ql_finished(qk_tap_dance_state_t *state, void *user_data);
+//void ql_reset(qk_tap_dance_state_t *state, void *user_data);
+// End of Tap Dance declarations
+
+// LAYOUT
 enum layer_number {
   _QWERTY = 0,
   _NUMPAD = 1
@@ -63,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |      |      | LEFT | DOWN | RGHT |   C  |-------|    |-------|   0  |   1  |   2  |   3  |   .  | END  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   | LAlt | CAPS |QWERTY| / Space /       \Enter \  |BackSP| RGUI |QWERTY|
- *                   |      |      |      |/       /         \      \ |      |      |      |
+ *                   |      |      |      |/  Enter/         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
 
@@ -72,11 +108,74 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,                        _______, KC_P7,   KC_P8,   KC_P9,   KC_PPLS, KC_PGUP,
   _______, _______, KC_PPLS, KC_UP,   KC_PMNS, KC_M,                        _______, KC_P4,   KC_P5,   KC_P6,   KC_PEQL, KC_PGDN,
   _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_C,     _______, _______,  KC_P0,   KC_P1,   KC_P2,   KC_P3,   KC_PDOT, KC_END,
-                         _______, _______, TO(_QWERTY),  KC_ENT,  _______,  _______, _______, KC_TRNS
+                 _______, _______, TO(_QWERTY),  TD(TD_SPC_ENT),  _______,  _______, _______, KC_TRNS
 )
 };
+// END OF LAYOUT
 
+// SECOND PART TAP DANCE
+// Determine the current tap dance state
+td_state_t cur_dance(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) return TD_DOUBLE_TAP;
+    else return TD_UNKNOWN;
+}
 
+// Initialize tap structure associated with example tap dance key
+static td_tap_t ql_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+// Functions that control what our tap dance key does
+void ql_finished(qk_tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            // Check to see if the layer is already set
+            if (layer_state_is(_NUMPAD)) {
+                // If already set, then switch it off
+                layer_off(_NUMPAD;
+            } else {
+                // If not already set, then switch the layer on
+                layer_on(_NUMPAD);
+            }
+            break;
+      //case TD_SINGLE_HOLD:
+      //    layer_on(_NUMPAD);
+      //    break;
+        case TD_DOUBLE_TAP:
+            // Check to see if the layer is already set
+            if (layer_state_is(_CAD)) {
+                // If already set, then switch it off
+                layer_off(_CAD);
+            } else {
+                // If not already set, then switch the layer on
+                layer_on(_CAD);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+/* void ql_reset(qk_tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released then switch off the layer
+    if (ql_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(_MY_LAYER);
+    }
+    ql_tap_state.state = TD_NONE;
+} */
+
+// Associate our tap dance key with its functionality
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [TD_NUM_CAD] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, ql_finished, NULL, 275)
+};
+// END OF TAP DANCE
+
+// START OF OLED
 #ifdef OLED_ENABLE
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -129,9 +228,9 @@ bool oled_task_user(void) {
   return false;
 }
 #endif
+// END OF OLED
 
-
-
+// START OF ENCODER
 /* The encoder_update_user is a function.
  * It'll be called by QMK every time you turn the encoder.
  *
@@ -165,4 +264,4 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
   }
   return false;
 }
-
+// END OF ENCODER
